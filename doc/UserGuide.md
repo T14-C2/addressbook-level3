@@ -50,6 +50,25 @@ Examples:
 * `find Betsy Tim John`<br>
   Returns Any person having names `Betsy`, `Tim`, or `John`
 
+## Editing a person: `edit`
+Edits the specified person in the address book<br>
+Format: `edit INDEX [NAME] [[p]p/PHONE_NUMBER] [[p]e/EMAIL] [[p]a/ADDRESS] [[t/TAG]...]` 
+ 
+> Words in `UPPER_CASE` are the parameters, items in `SQUARE_BRACKETS` are optional, 
+> items with `...` after them can have multiple instances. Order of parameters are fixed. 
+> 
+> Put a `p` before the phone / email / address prefixes to mark it as `private`. `private` details can only
+> be seen using the `viewall` command.
+> 
+> Persons can have any number of tags (including 0)
+> 
+> Given parameters will edit the Person's corresponding detail, whereas skipped parameters will preserve
+> the person's corresponding detail.
+
+Examples:
+* `list`<br> 
+* `edit 3 Peter Doe p/98765432 e/peterd@gmail.com`
+
 ## Deleting a person : `delete`
 Deletes the specified person from the address book. Irreversible.<br>
 Format: `delete INDEX`
