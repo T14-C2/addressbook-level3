@@ -26,7 +26,14 @@ public class Parser {
                     + " (?<isAddressPrivate>p?)a/(?<address>[^/]+)"
                     + "(?<tagArguments>(?: t/[^/]+)*)"); // variable number of tags
 
-
+    public static final Pattern EDIT_PERSON_DATA_ARGS_FORMAT =  
+            Pattern.compile("(?<targetIndex>\\s*\\d+)"
+                + "( (?<name>[^/]+))?"
+                + "( (?<isPhonePrivate>p?)p/(?<phone>[^/]+))?"
+                + "( (?<isEmailPrivate>p?)e/(?<email>[^/]+))?"
+                + "( (?<isAddressPrivate>p?)a/(?<address>[^/]+))?"
+                + "(?<tagArguments>(?: t/[^/]+)*)");
+    
     /**
      * Signals that the user input could not be parsed.
      */
@@ -61,6 +68,9 @@ public class Parser {
 
             case AddCommand.COMMAND_WORD:
                 return prepareAdd(arguments);
+                
+            case EditCommand.COMMAND_WORD:
+                return prepareEdit(arguments);
 
             case DeleteCommand.COMMAND_WORD:
                 return prepareDelete(arguments);
@@ -121,6 +131,48 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses arguments in the context of the edit person command.
+     *
+     * @param args full command args string
+     * @return the prepared command
+     */
+    private Command prepareEdit(String args){
+        final Matcher matcher = EDIT_PERSON_DATA_ARGS_FORMAT.matcher(args.trim());
+        if (!matcher.matches()) {
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE));
+        }
+        
+        try {
+            final int targetIndex = Integer.parseInt(matcher.group("targetIndex").trim());
+            final String name = matcher.group("name");
+            final String phone = matcher.group("phone");
+            final String email = matcher.group("email");
+            final String address = matcher.group("address");
+            final boolean privPhone = phone == null ? false :
+                isPrivatePrefixPresent(matcher.group("isPhonePrivate"));
+            final boolean privEmail = email == null ? false :
+                isPrivatePrefixPresent(matcher.group("isEmailPrivate"));
+            final boolean privAddress = address == null ? false :
+                isPrivatePrefixPresent(matcher.group("isAddressPrivate"));
+            final Set<String> tags = matcher.group("tagArguments").isEmpty() ? null :
+                getTagsFromArgs(matcher.group("tagArguments"));
+            
+            return new EditCommand(targetIndex,
+                    name,
+                    phone, privPhone,
+                    email, privEmail,
+                    address, privAddress,
+                    tags
+                );
+        } catch (IllegalValueException ive) {
+            return new IncorrectCommand(ive.getMessage());
+        } catch (NumberFormatException e) {
+            return new IncorrectCommand(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE));
+        }
+    }
+    
+    
     /**
      * Checks whether the private prefix of a contact detail in the add command's arguments string is present.
      */

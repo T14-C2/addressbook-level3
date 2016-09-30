@@ -115,6 +115,17 @@ public class AddressBook {
     }
 
     /**
+     * Replaces a person with another person from the address book.
+     * 
+     * @throws PersonNotFoundException if toRemove person could not be found in the list.
+     * @throws DuplicatePersonException if toAdd person is a duplicate of an existing person in the list.
+     */
+    public void replacePerson(ReadOnlyPerson toRemove, Person toAdd) throws DuplicatePersonException, PersonNotFoundException {
+        syncTagsWithMasterList(toAdd);
+        allPersons.replace(toRemove, toAdd);
+    }
+
+    /**
      * Removes the equivalent Tag from the address book.
      *
      * @throws TagNotFoundException if no such Tag could be found.

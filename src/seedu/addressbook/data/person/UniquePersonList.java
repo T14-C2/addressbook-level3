@@ -105,6 +105,23 @@ public class UniquePersonList implements Iterable<Person> {
             throw new PersonNotFoundException();
         }
     }
+    
+    /**
+     * Replaces a person with another person.
+     * 
+     * @throws PersonNotFoundException if toRemove person could not be found in the list.
+     * @throws DuplicatePersonException if toAdd person is a duplicate of an existing person in the list.
+     */
+    public void replace(ReadOnlyPerson toRemove, Person toAdd) throws PersonNotFoundException, DuplicatePersonException {
+        final int index = internalList.indexOf(toRemove);
+        if (index == -1) {
+            throw new PersonNotFoundException();
+        }
+        if (contains(toAdd)) {
+            throw new DuplicatePersonException();
+        }
+        internalList.set(index, toAdd);
+    }
 
     /**
      * Clears all persons in list.
